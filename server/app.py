@@ -45,7 +45,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in os.getenv(
-        "FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000").split(",")],
+        "FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,https://rwako.vercel.app").split(",")],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
