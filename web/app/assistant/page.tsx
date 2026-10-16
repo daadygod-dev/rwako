@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button, Chip } from "@heroui/react";
+import { AIInputWithLoading } from "@/components/ui/ai-input-with-loading";
 import { api, ApiError, type AskResponse, type ChatMessage, type VisualSpec } from "@/lib/api";
 import { useUI } from "@/lib/store";
 
@@ -177,7 +178,6 @@ const nid = () => `m${++idc}`;
 export default function AssistantPage() {
   const store = useUI();
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -197,7 +197,6 @@ export default function AssistantPage() {
       .slice(-8)
       .map((e) => ({ role: e.kind as "user" | "assistant", content: e.kind === "user" ? e.text : e.text }));
     setEntries((prev) => [...prev, { id: nid(), kind: "user", text: message }]);
-    setDraft("");
     setBusy(true);
     try {
       const res: AskResponse = await api.ask(message, history, store.weights);
@@ -348,45 +347,15 @@ export default function AssistantPage() {
       </div>
 
       {/* Composer */}
-      <form
+      <AIInputWithLoading
         className="pt-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send(draft);
-        }}
-      >
-        <div
-          className="flex items-end gap-2 rounded-md p-2"
-          style={{ background: "var(--g-color-base-selection)" }}
-        >
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void send(draft);
-              }
-            }}
-            rows={1}
-            placeholder="Ask about districts, rankings, drivers, clusters, budgets…"
-            aria-label="Message the analyst"
-            className="max-h-36 min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-zinc-400"
-            style={{ color: "var(--rc-fg)" }}
-          />
-          <Button
-            type="submit"
-            size="sm"
-            isDisabled={draft.trim().length === 0 || busy}
-            aria-label="Send message"
-          >
-            {busy ? "…" : "Send"}
-          </Button>
-        </div>
-        <p className="mt-1.5 text-center text-[11px] rc-muted">
-          Grounded in live data — verify numbers against the Index, Drivers, and Simulator pages.
-        </p>
-      </form>
+        loading={busy}
+        onSubmit={(value) => send(value)}
+        placeholder="Ask about districts, rankings, drivers, clusters, budgets…"
+      />
+      <p className="mt-1.5 text-center text-[11px] rc-muted">
+        Grounded in live data — verify numbers against the Index, Drivers, and Simulator pages.
+      </p>
     </div>
   );
 }
