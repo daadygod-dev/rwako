@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Rwanda Compass">
+  <!-- C ring with an NE-facing gap (wedge mask) -->
+  <mask id="rc-gap">
+    <rect width="64" height="64" fill="white"/>
+    <path d="M32 32 L37.6 0.5 L58.2 13.6 Z" fill="black"/>
+  </mask>
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#1E1E22" stroke-width="10" mask="url(#rc-gap)"/>
+  <!-- needle: slim kite, pointing NE -->
+  <path d="M48 16 L35 33 L16 48 L31 29 Z" fill="#E23B33"/>
+  <!-- pivot -->
+  <circle cx="32" cy="32" r="4" fill="#FFFFFF" stroke="#1E1E22" stroke-width="1.5"/>
+</svg>

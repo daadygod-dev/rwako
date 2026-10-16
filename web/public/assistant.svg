@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- spark -->
+  <path d="M104 6c1.2 8.6 4.4 11.8 13 13-8.6 1.2-11.8 4.4-13 13-1.2-8.6-4.4-11.8-13-13 8.6-1.2 11.8-4.4 13-13z" fill="#E5484D"/>
+  <!-- chat bubble -->
+  <circle cx="62" cy="70" r="40" fill="#23232E"/>
+  <polygon points="34,100 24,118 48,106" fill="#23232E"/>
+  <!-- compass needle -->
+  <polygon points="88,42 70,60 36,88 54,70" fill="#E5484D"/>
+  <polygon points="88,42 70,60 54,70 72,52" fill="#F2555A" opacity="0.55"/>
+  <!-- hub -->
+  <circle cx="62" cy="65" r="6.5" fill="#F5F5F7"/>
+</svg>

@@ -1,0 +1,44 @@
+{
+  "generated_utc": "2026-10-15T18:10:00.645740+00:00",
+  "districts": 30,
+  "facilities": 1485,
+  "facilities_unmatched": 0,
+  "sources": {
+    "boundaries": {
+      "file": "data/raw/geoboundaries/rwa_adm2.geojson",
+      "provider": "geoBoundaries (gbOpen RWA ADM2)",
+      "license": "CC BY 4.0",
+      "url": "https://www.geoboundaries.org"
+    },
+    "gazetteer": {
+      "file": "data/raw/nisr/rwa_gazetteer_rphc2012_v2.xlsx",
+      "provider": "NISR RPHC2012 gazetteer (via HDX COD-AB)",
+      "license": "NISR open data (CC BY 4.0 default)",
+      "url": "https://data.humdata.org/dataset/cod-ab-rwa"
+    },
+    "health_facilities": {
+      "file": "data/raw/osm/hotosm_rwa_health_facilities.geojson.zip",
+      "provider": "OpenStreetMap via HDX",
+      "license": "ODbL",
+      "url": "https://data.humdata.org/dataset/hotosm_rwa_health_facilities"
+    },
+    "education_facilities": {
+      "file": "data/raw/osm/hotosm_rwa_education_facilities.geojson.zip",
+      "provider": "OpenStreetMap via HDX",
+      "license": "ODbL",
+      "url": "https://data.humdata.org/dataset/hotosm_rwa_education_facilities"
+    },
+    "food_security_ipc": {
+      "file": "data/raw/fews_net/ipc_2023_04.geojson",
+      "provider": "FEWS NET IPC (country-level phases)",
+      "license": "open",
+      "url": "https://fews.net"
+    }
+  },
+  "notes": [
+    "Densities use geodesic polygon areas (shoelace + cos-lat correction, km^2).",
+    "OSM completeness varies by district; treat as service-presence proxies.",
+    "NISR survey indicators (poverty, literacy, stunting, electrification...) are a manual drop-in CSV template: data/raw/nisr/district_indicators_TEMPLATE.csv"
+  ],
+  "survey": "official NISR CSV joined: 30/30 rows matched to pcodes"
+}
