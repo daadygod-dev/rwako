@@ -1,11 +1,11 @@
-"""Grounded chat analyst — keyless OpenAI-compatible endpoint, stdlib transport only.
+"""Grounded chat analyst — Groq-hosted reasoning model, stdlib transport only.
 
 The model never sees raw files; every number in its reply comes from a tool
 result computed request-time from data/processed. Transport is plain urllib
-against an OpenAI-compatible chat API (default: Pollinations anonymous tier —
-no key, no SDK, no extra dependencies). Native tool_calls drive the loop;
-WEIGHTS_JSON carries weight suggestions back; _build_visual turns real tool
-results into charts. Nothing is model-invented.
+against Groq's OpenAI-compatible chat API (key via GROQ_API_KEY, no SDK, no
+extra dependencies). Native tool_calls drive the loop; WEIGHTS_JSON carries
+weight suggestions back; _build_visual turns real tool results into charts.
+Nothing is model-invented.
 """
 
 from __future__ import annotations
