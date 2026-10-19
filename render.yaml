@@ -15,6 +15,6 @@ services:
       - key: PYTHON_VERSION
         value: "3.13"
       # Lock CORS to the deployed frontend + local dev.
-      # Update to your Vercel URL(s) after the first frontend deploy (comma-separated).
+      # Add your exact Vercel production URL(s) here (comma-separated).
       - key: FRONTEND_ORIGINS
-        value: http://localhost:3000
+        value: http://localhost:3000,http://127.0.0.1:3000,https://rwako.vercel.app

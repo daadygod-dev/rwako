@@ -42,12 +42,27 @@ except ImportError:
 
 app = FastAPI(title="Rwanda Compass API", version="1.0.0")
 app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+# CORS: explicit origins from env PLUS a regex that accepts any localhost /
+# 127.0.0.1 / private-LAN origin (any port). Without the regex, Next.js
+# auto-incrementing to :3001 (or a phone hitting the LAN IP) fails preflight
+# with 400 "Disallowed CORS origin".
+_origins = [o.strip() for o in os.getenv(
+    "FRONTEND_ORIGINS",
+    "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,https://rwako.vercel.app",
+).split(",") if o.strip()]
+_origin_regex = os.getenv(
+    "FRONTEND_ORIGIN_REGEX",
+    r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d{1,3}\.\d{1,3}|"
+    r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(?::\d+)?$",
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in os.getenv(
-        "FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,https://rwako.vercel.app").split(",")],
-    allow_methods=["GET", "POST"],
+    allow_origins=_origins,
+    allow_origin_regex=_origin_regex,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+    max_age=86400,
 )
 
 STORE = ds.DataStore()

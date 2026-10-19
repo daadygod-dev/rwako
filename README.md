@@ -11,7 +11,7 @@
 [![Stack](https://img.shields.io/badge/stack-FastAPI_%2B_Next.js_16-cbff5c?style=for-the-badge)](https://github.com/daadygod-dev/rwako)
 [![ML](https://img.shields.io/badge/ML-scikit--learn_%7C_KMeans_%7C_GBR-15251B?style=for-the-badge)](docs/METHODOLOGY.md)
 [![Data](https://img.shields.io/badge/data-8%2F11_indicators_live-3B3F2B?style=for-the-badge)](data/processed/manifest.json)
-[![Tests](https://img.shields.io/badge/tests-52_backend_passing-98BB4B?style=for-the-badge)](server/tests)
+[![Tests](https://img.shields.io/badge/tests-54_backend_passing-98BB4B?style=for-the-badge)](server/tests)
 [![License](https://img.shields.io/badge/data-CC_BY_4.0-ffffff?style=for-the-badge)](https://creativecommons.org/licenses/by/4.0/)
 
 <sub>NISR 2026 Big Data Hackathon · <b>Track 3: Open Innovation</b> · *"Tackling national priorities as per NST2, Vision 2050"*</sub>
@@ -134,7 +134,7 @@ cd web && npm install && npm run dev
 | Command | What it proves |
 |---|---|
 | `python scripts/build_dataset.py` | Reproduces the entire data product offline from `data/raw/` |
-| `python -m pytest server/tests -q` | **52 tests**: gaps, index renormalization, allocation exactness, typologies determinism, driver leakage guards, prediction LOO, chat tools, API contracts |
+| `python -m pytest server/tests -q` | **54 tests**: gaps, index renormalization, allocation exactness, typologies determinism, driver leakage guards, prediction LOO, chat tools, API contracts, CORS preflight |
 | `npx tsc --noEmit` (in `web/`) | Frontend type safety |
 | `npm run build` (in `web/`) | Production build — 10/10 static routes |
 | `curl -X POST localhost:8000/api/v1/analysis/predict -H 'Content-Type: application/json' -d '{"target":"poverty_rate","adm2_pcode":"RW25","scenario":{"electricity_access":80}}'` | Live counterfactual prediction with LOO report |

@@ -172,6 +172,30 @@ def test_api_validation_errors(client):
                        json={"target": "stunting_rate"}).status_code == 406  # not available in tests
 
 
+def test_cors_preflight_allows_local_origins(client):
+    for origin in (
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://192.168.1.50:3000",
+    ):
+        r = client.options(
+            "/api/v1/indicators",
+            headers={"Origin": origin, "Access-Control-Request-Method": "GET"},
+        )
+        assert r.status_code == 200, f"preflight rejected for {origin}: {r.text}"
+        assert r.headers["access-control-allow-origin"] == origin
+
+
+def test_cors_preflight_rejects_foreign_origin(client):
+    r = client.options(
+        "/api/v1/indicators",
+        headers={"Origin": "https://evil.example.com", "Access-Control-Request-Method": "GET"},
+    )
+    assert r.status_code == 400
+    assert "access-control-allow-origin" not in r.headers
+
+
 def test_api_allocate_sums_to_budget(client):
     r = client.post("/api/v1/analysis/allocate",
                     json={"budget_rwf_m": 999.999, "floor_pct": 10})
