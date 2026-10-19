@@ -40,7 +40,7 @@ flowchart TD
         API["REST endpoints\n/api/*"]
     end
 
-    subgraph Frontend["Client — Next.js 15 (HeroUI + Gravity icons + Recharts + 3D globe)"]
+    subgraph Frontend["Client — Next.js 16 (HeroUI + Gravity icons + Recharts + d3-geo)"]
         UI["Globe · Map · Index · Typologies · Drivers · Simulator"]
     end
 
@@ -98,16 +98,13 @@ indicator code) — never a silent fallback to defaults. CORS locked to the fron
 
 ## 3b. Visualization system
 
-**Stack:** Next.js 15 (App Router, TypeScript) · HeroUI component library (Tailwind) ·
-`@gravity-ui/icons` · Recharts · `react-globe.gl` + three.js for the hero 3D globe.
+**Stack:** Next.js 16 (App Router, TypeScript) · HeroUI component library (Tailwind) ·
+`@gravity-ui/icons` · Recharts · `d3-geo` for the 2D choropleth.
 
-- **3D globe (hero, lazy-loaded `ssr:false`)**: ADM2 polygons rendered via
-  `polygonCapColor` + `polygonAltitude`; altitude = active metric value, color = semantic scale.
-  Hover → tooltip (value, rank); click → camera flies to district + detail drawer opens.
-  Toggle layers: facility points (health/education), cluster coloring mode, auto-rotate,
-  reset view.
-- **2D choropleth (fallback + comparative view)**: `d3-geo` SVG paths — no SDK, no tiles,
-  no keys. Same color language as the globe.
+- **2D choropleth (primary view)**: `d3-geo` SVG paths — no SDK, no tiles, no keys.
+  ADM2 polygons colored by active metric (need score or individual indicator gaps).
+  Hover → tooltip (value, rank, top gaps); click → detail drawer opens.
+  Province filter, quantile-bin legend filter, metric selector.
 - **Color language**: single-hue sequential "worse = darker red"; colorblind-safe; meaning never
   encoded by color alone; quantile bins (5) default, continuous toggle.
 - **Charts** (Recharts): horizontal sorted bars (rankings); 100% stacked "deprivation composition"
@@ -124,7 +121,7 @@ indicator code) — never a silent fallback to defaults. CORS locked to the fron
 flowchart TD
     HOME["🗺️ Map & Overview\nchoropleth, metric switcher\nlegend + province filter"]
     DET["📋 District drawer\nclick a district: profile,\nindicator vs national median,\nnearest-neighbour comparison"]
-    INDEX["📊 Priority Index\nweight sliders → live ranking\ntop-mover badges"]
+    INDEX["📊 Need score\nweight sliders → live ranking\ntop-mover badges"]
     TYPO["🧩 Typologies\ncluster selector, PCA scatter\n'what districts like this get'"]
     DRIVER["🔍 Drivers\ntarget selector → importance bars\ncaution caption"]
     SIM["💸 Budget Simulator\nenvelope, floor, strategy\nper-district allocation + export"]
@@ -164,13 +161,10 @@ Every element below is fed live from `/api/v1/*` — the frontend contains zero 
 **1) Globe view — `/` (hero)**
 | Display | Data source | Interaction |
 |---|---|---|
-| 30 district polygons extruded by active metric | `GET /geo` + `POST /analysis/index` or raw values | altitude = value; color = semantic scale |
-| Metric selector (only available indicators; unavailable ones shown disabled with reason) | `GET /indicators` | re-extrudes + recolors. farm ~200 ms |
-| Cluster-coloring mode | `POST /analysis/typologies` (k from state) | colors by cluster; legend w/ severity |
-| Facility points layer (health ⊕ education, toggleable) | `GET /facilities?kind=` | 1,485 real OSM points |
-| Hover card: district · value · rank · unit | geo props + index | follows cursor |
-| Click → fly-to + drawer | `/districts/{pcode}` | “open full profile” |
-| Auto-rotate / reset / flat-2D fallback toggle | — | 2D choropleth for slow devices |
+| 30 district polygons colored by active metric | `GET /geo` + `POST /analysis/index` or raw values | color = semantic scale |
+| Metric selector (only available indicators; unavailable ones shown disabled with reason) | `GET /indicators` | recolors map |
+| Hover card: district · value · rank · top gaps | geo props + index | follows cursor |
+| Click → drawer | `/districts/{pcode}` | "open full profile" |
 
 **2) Map & ranking — `/map`**
 | Display | Data source | Interaction |
@@ -179,7 +173,7 @@ Every element below is fed live from `/api/v1/*` — the frontend contains zero 
 | Synchronized ranked horizontal bars (top→bottom 30) | index endpoint | hovering a bar highlights its polygon |
 | Bin legend + continuous-scale toggle + quantile note | — | — |
 
-**3) Priority Index builder — `/index`**
+**3) Need score builder — `/index`**
 | Display | Data source | Interaction |
 |---|---|---|
 | Weight sliders per available indicator (0–5) + unavailable rows as disabled chips with reason | `GET /indicators` | debounce 350 ms → `POST /analysis/index` |
@@ -237,11 +231,11 @@ Every element below is fed live from `/api/v1/*` — the frontend contains zero 
 - **Determinism**: same weights/params → same rendered numbers (enabled by stateless backend).
 
 ### 4d. Interactions (state & feedback)
-- **Weight sliders** (0–5, step 0.5, preset chips) → debounce 350 ms → index recompute → globe/2D recolor + ranking in one animation; `?w=` URL sync so views are shareable.
+- **Weight sliders** (0–5, step 0.5, preset chips) → debounce 350 ms → index recompute → map recolor + ranking in one animation; `?w=` URL sync so views are shareable.
 - **District click** → side drawer (no route change), ESC/backdrop closes.
 - **Metric select** → legend + scale adapt.
 - **Budget input** → currency input (RWF M) + floor slider; result table sortable, CSV export.
-- **k slider** (2–6) → cluster globe/map + scatter + silhouette chip.
+- **k slider** (2–6) → cluster scatter + silhouette chip.
 - All requests carry skeleton states; errors get a retry affordance with the API error message.
 
 ## 5. ML architecture
@@ -288,8 +282,8 @@ docs/                          # METHODOLOGY.md, SYSTEM_DESIGN.md
 ```
 
 Frontend env: `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` (dev) — API CORS allows Next.js
-default port 3000 and Vite 5173. The globe view is a client component with a dynamic
-`ssr:false` import; everything else renders/streams server-side where practical.
+default port 3000 and Vite 5173. All pages are client components with `force-dynamic`;
+data is fetched via TanStack Query with skeleton loading states.
 
 ## 7. Definition of done (per milestone)
 
@@ -298,4 +292,4 @@ default port 3000 and Vite 5173. The globe view is a client component with a dyn
   + a smoke run against real `data/processed`.
 - M2 frontend: all six views wired to live API, zero hardcoded district names/values in `web/src`.
 - M3: survey template filled → features light up; availability chips flip to green with sources.
-- M4: deploy (Cloudflare Pages + Render free tier), README screenshots, demo script.
+- M4: deploy (Vercel + Render free tier), README screenshots, demo script.

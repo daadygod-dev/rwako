@@ -68,6 +68,17 @@ export default function HomePage() {
         communities have the least, understand what they lack beside what, and agree on where money and
         programs should go first.
       </p>
+      <div
+        className="mt-6 flex items-start gap-3 rounded-md p-4"
+        style={{ background: "var(--g-color-base-selection)" }}
+      >
+        <span className="text-lg font-bold" style={{ color: "var(--g-color-text-brand)" }}>Impact</span>
+        <p className="text-sm rc-muted">
+          A district planner can see which of the 30 districts need attention first, understand why
+          (deprivation gaps, not raw numbers), and split a budget fairly — all in under 5 minutes,
+          with every number traceable to a public NISR source.
+        </p>
+      </div>
 
       {/* Actions */}
       <div className="mt-7 flex flex-wrap gap-3">

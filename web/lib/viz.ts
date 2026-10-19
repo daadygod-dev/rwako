@@ -4,7 +4,7 @@ export function gapColor(t: number | null | undefined): string {
   if (t == null || Number.isNaN(t)) return "oklch(75% 0.01 90)";
   const t1 = Math.min(1, Math.max(0, t));
   // light amber -> deep red (oklch lightness 88% -> 38%)
-  const l = 88 - 50 * t1 + 0.0;
+  const l = 88 - 50 * t1;
   return `oklch(${l}% ${0.05 + 0.15 * t1} 35)`;
 }
 

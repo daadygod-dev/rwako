@@ -88,7 +88,7 @@ export default function IndexPage() {
     return (
       <div>
         <PageTitle
-          title="Priority Index builder"
+          title="Need score builder"
           subtitle="Set what matters; the ranking follows your weights — transparently, as a weighted mean of deprivation gaps."
         />
         <div className="mb-4">
@@ -105,7 +105,7 @@ export default function IndexPage() {
   return (
     <div>
       <PageTitle
-        title="Priority Index builder"
+        title="Need score builder"
         subtitle="Set what matters; the ranking follows your weights — transparently, as a weighted mean of deprivation gaps."
       />
 
@@ -243,7 +243,7 @@ export default function IndexPage() {
                     <th className="px-3 py-2 font-medium">Rank</th>
                     <th className="px-3 py-2 font-medium">District</th>
                     <th className="px-3 py-2 font-medium">Province</th>
-                    <th className="px-3 py-2 text-right font-medium">Priority index</th>
+                    <th className="px-3 py-2 text-right font-medium">Need score</th>
                   </tr>
                 </thead>
                 <tbody>

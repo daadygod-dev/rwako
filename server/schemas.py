@@ -121,14 +121,6 @@ class DistrictRow(BaseModel):
     values: dict[str, float | None]
 
 
-class DistrictOut(BaseModel):
-    district: str
-    adm2_pcode: str
-    province: str
-    centroid: list[float]
-    gap: dict[str, float | None]
-
-
 class IndexRow(BaseModel):
     rank: int
     district: str
@@ -247,6 +239,11 @@ class AskRequest(BaseModel):
         return self
 
 
+class Recommendation(BaseModel):
+    text: str
+    href: str | None = None
+
+
 class AskResponse(BaseModel):
     as_of: str
     answer: str
@@ -254,3 +251,5 @@ class AskResponse(BaseModel):
     suggested_weights: dict[str, float] | None = None
     weights_note: str | None = None
     visual: dict[str, Any] | None = None
+    follow_ups: list[str] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)

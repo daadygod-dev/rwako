@@ -303,9 +303,11 @@ export default function DriversPage() {
                   <YAxis type="category" dataKey="label" width={220} tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v) => [fmt(v as number, 3), "importance"]} />
                   <Bar dataKey="importance" radius={[0, 4, 4, 0]}>
-                    {q.data.drivers.map((d, i) => (
-                      <Cell key={d.code} fill={gapColor(1 - i / Math.max(1, q.data!.drivers.length))} />
-                    ))}
+                    {q.data.drivers.map((d, i) => {
+                      const intensity = q.data.drivers.length > 1 ? i / (q.data.drivers.length - 1) : 0;
+                      const l = 45 + 30 * (1 - intensity);
+                      return <Cell key={d.code} fill={`oklch(${l}% 0.15 250)`} />;
+                    })}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

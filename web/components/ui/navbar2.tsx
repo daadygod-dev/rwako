@@ -20,7 +20,7 @@ type MegaMenu = {
 };
 
 /** Navbar content mirrors the real product flow:
- *  watch (Globe/Map) → decide (Priority Index) → detect patterns (ML) → plan (budget) → verify (data). */
+ *  watch (Map) → decide (need score) → detect patterns (ML) → plan (budget) → verify (data). */
 const EXPLORE_MENU: MegaMenu = {
   columns: [
     {
@@ -33,12 +33,12 @@ const EXPLORE_MENU: MegaMenu = {
     {
       eyebrow: "Decide",
       links: [
-        { label: "Priority Index builder", href: "/priority-index", badge: "core", hint: "your weights, live ranking" },
+        { label: "Need score builder", href: "/priority-index", badge: "core", hint: "your weights, live ranking" },
       ],
     },
   ],
   footerLinks: [
-    { label: "How the Priority Index works", href: "/data" },
+    { label: "How the need score works", href: "/data" },
     { label: "Data sources & licenses", href: "/data" },
   ],
   showSources: true,
@@ -214,6 +214,29 @@ export default function Navbar2() {
 
           {/* Right actions */}
           <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <div className="flex items-center rounded-md" style={{ background: "var(--g-color-base-selection)" }}>
+              <button
+                onClick={() => store.setLanguage("en")}
+                className="rounded-md px-2.5 py-1.5 text-xs font-semibold transition-opacity hover:opacity-75"
+                style={{
+                  background: store.language === "en" ? "var(--g-color-base-brand)" : "transparent",
+                  color: store.language === "en" ? "var(--g-color-private-brand-1000-solid)" : "var(--rc-fg)",
+                }}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => store.setLanguage("kin")}
+                className="rounded-md px-2.5 py-1.5 text-xs font-semibold transition-opacity hover:opacity-75"
+                style={{
+                  background: store.language === "kin" ? "var(--g-color-base-brand)" : "transparent",
+                  color: store.language === "kin" ? "var(--g-color-private-brand-1000-solid)" : "var(--rc-fg)",
+                }}
+              >
+                KIN
+              </button>
+            </div>
+
             <button onClick={store.toggleTheme} aria-label="Toggle theme"
               className="grid h-9 w-9 place-items-center rounded-md"
               style={{ background: "var(--g-color-base-selection)", color: "var(--rc-fg)" }}>

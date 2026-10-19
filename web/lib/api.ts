@@ -112,6 +112,8 @@ export type AskResponse = {
   suggested_weights: Record<string, number> | null;
   weights_note: string | null;
   visual: VisualSpec | null;
+  follow_ups: string[];
+  recommendations: { text: string; href: string | null }[];
 };
 
 export class ApiError extends Error {

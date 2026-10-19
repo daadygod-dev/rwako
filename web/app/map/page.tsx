@@ -68,9 +68,15 @@ export default function MapPage() {
         .filter(([, v]) => v != null)
         .sort((a, b) => (b[1] as number) - (a[1] as number))
         .slice(0, 3) as [string, number][];
-      return { ...d, row, t, topGaps, values: valuesByPcode.get(d.adm2_pcode) ?? {} };
+      let metricT = t;
+      if (activeMetric !== "priority_index") {
+        const metricGap = gaps[activeMetric];
+        if (metricGap != null) metricT = metricGap;
+        else metricT = t;
+      }
+      return { ...d, row, t: metricT, topGaps, values: valuesByPcode.get(d.adm2_pcode) ?? {} };
     });
-  }, [districtsQ.data, idxQ.data]);
+  }, [districtsQ.data, idxQ.data, activeMetric]);
 
   const byPcode = useMemo(() => new Map(rows.map((r) => [r.adm2_pcode, r])), [rows]);
   // 5 bins → 6 edges: [min, ...4 quantile cuts, max]
@@ -138,8 +144,8 @@ export default function MapPage() {
           </Select.Trigger>
           <Select.Popover>
             <ListBox>
-              <ListBox.Item id="priority_index" textValue="Priority index (composite)">
-                Priority index (composite)
+              <ListBox.Item id="priority_index" textValue="Need score (composite)">
+                Need score (composite)
                 <ListBox.ItemIndicator />
               </ListBox.Item>
               {(indicatorsQ.data ?? []).map((i) => (
@@ -244,6 +250,8 @@ export default function MapPage() {
                         key={pcode}
                         d={geoPath(projection)(f as never) ?? ""}
                         fill={dimmed ? "oklch(88% 0.01 90)" : gapColor(r?.t)}
+                        role="img"
+                        aria-label={`${f.properties.shapeName}: ${r?.t != null ? `${(r.t * 100).toFixed(0)}%` : "no data"} ${activeMetric === "priority_index" ? "need score" : labelOf(activeMetric)}`}
                         stroke={isHover ? "var(--g-color-text-brand)" : "rgba(255,255,255,0.85)"}
                         strokeWidth={isHover ? 2.2 : 0.7}
                         className="cursor-pointer"
@@ -280,8 +288,8 @@ export default function MapPage() {
               <p className="text-xs rc-muted">
                 {hoveredRow.province}
                 {hoveredRow.row
-                  ? ` · rank #${hoveredRow.row.rank} · index ${hoveredRow.row.priority_index.toFixed(3)}`
-                  : " · no index yet"}
+                  ? ` · rank #${hoveredRow.row.rank} · need score ${hoveredRow.row.priority_index.toFixed(3)}`
+                  : " · no score yet"}
               </p>
               {hoveredRow.topGaps.length > 0 && (
                 <ul className="mt-2 flex flex-col gap-1.5">

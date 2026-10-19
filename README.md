@@ -6,12 +6,12 @@
 
 ### *Put the next franc where need is greatest.*
 
-**District development intelligence for Rwanda's 30 districts — live Priority Index, ML typologies, counterfactual prediction, and auditable budgets.**
+**District development intelligence for Rwanda's 30 districts — live Need score, ML typologies, counterfactual prediction, and auditable budgets.**
 
 [![Stack](https://img.shields.io/badge/stack-FastAPI_%2B_Next.js_16-cbff5c?style=for-the-badge)](https://github.com/daadygod-dev/rwako)
 [![ML](https://img.shields.io/badge/ML-scikit--learn_%7C_KMeans_%7C_GBR-15251B?style=for-the-badge)](docs/METHODOLOGY.md)
 [![Data](https://img.shields.io/badge/data-8%2F11_indicators_live-3B3F2B?style=for-the-badge)](data/processed/manifest.json)
-[![Tests](https://img.shields.io/badge/tests-48_backend_passing-98BB4B?style=for-the-badge)](server/tests)
+[![Tests](https://img.shields.io/badge/tests-52_backend_passing-98BB4B?style=for-the-badge)](server/tests)
 [![License](https://img.shields.io/badge/data-CC_BY_4.0-ffffff?style=for-the-badge)](https://creativecommons.org/licenses/by/4.0/)
 
 <sub>NISR 2026 Big Data Hackathon · <b>Track 3: Open Innovation</b> · *"Tackling national priorities as per NST2, Vision 2050"*</sub>
@@ -31,7 +31,7 @@ Rwanda's 30 districts start from very different places on the road to Vision 205
 | # | What it does | How |
 |---|---|---|
 | 1 | **Unifies** district indicators from NISR + open sources | Offline stdlib builder → versioned CSV product + provenance manifest |
-| 2 | **Ranks** every district with a transparent, weight-configurable Priority Index | Min–max deprivation gaps → weighted mean, renormalized per district |
+| 2 | **Ranks** every district with a transparent, weight-configurable Need score | Min–max deprivation gaps → weighted mean, renormalized per district |
 | 3 | **Segments** districts into intervention typologies with ML | K-Means + PCA + silhouette, severity-ordered groups |
 | 4 | **Predicts** outcomes under planner-edited scenarios | Gradient boosting + leave-one-out validation, clipped to observed ranges |
 | 5 | **Simulates** budget splits that sum exactly | Proportional allocation + per-district floor, largest-remainder rounding |
@@ -45,7 +45,7 @@ Rwanda's 30 districts start from very different places on the road to Vision 205
 |---|---|---|
 | 🏠 **Hero** | `/` | Live headline stats, top-5 need list, 3-step method — all from the API |
 | 🗺️ **Map & ranking** | `/map` | d3-geo choropleth (ocean, graticule, hover cards with top gaps), quantile-bin legend filter, province chips, synced ranking list |
-| 🎚️ **Priority Index builder** | `/priority-index` | Weight sliders grouped by pillar, presets, chart/ranking toggle, shareable `?w=` URLs |
+| 🎚️ **Need score builder** | `/priority-index` | Weight sliders grouped by pillar, presets, chart/ranking toggle, shareable `?w=` URLs |
 | 🧩 **Typologies** | `/typologies` | PCA scatter + severity-worded group cards with member chips and defining gaps |
 | 🔍 **Drivers** | `/drivers` | **Explain** (gradient-boost importances) + **Predict what-if** (district + scenario sliders, baseline vs predicted, LOO trust report) |
 | 💸 **Simulator** | `/simulator` | Envelope + floor controls, chart/table toggle, exact-sum table, CSV export |
@@ -134,7 +134,7 @@ cd web && npm install && npm run dev
 | Command | What it proves |
 |---|---|
 | `python scripts/build_dataset.py` | Reproduces the entire data product offline from `data/raw/` |
-| `python -m pytest server/tests -q` | **48 tests**: gaps, index renormalization, allocation exactness, typologies determinism, driver leakage guards, prediction LOO, chat tools, API contracts |
+| `python -m pytest server/tests -q` | **52 tests**: gaps, index renormalization, allocation exactness, typologies determinism, driver leakage guards, prediction LOO, chat tools, API contracts |
 | `npx tsc --noEmit` (in `web/`) | Frontend type safety |
 | `npm run build` (in `web/`) | Production build — 10/10 static routes |
 | `curl -X POST localhost:8000/api/v1/analysis/predict -H 'Content-Type: application/json' -d '{"target":"poverty_rate","adm2_pcode":"RW25","scenario":{"electricity_access":80}}'` | Live counterfactual prediction with LOO report |

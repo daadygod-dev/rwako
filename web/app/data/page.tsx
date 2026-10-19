@@ -151,7 +151,25 @@ export default function DataPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold">Provenance</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">Provenance</h2>
+          <Button
+            size="sm"
+            variant="tertiary"
+            onPress={() => {
+              const csv = "district,adm2_pcode,province,area_km2,health_facilities,education_facilities,health_per_1000km2,education_per_1000km2\n";
+              const blob = new Blob([csv], { type: "text/csv" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "rwanda-compass-districts.csv";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            Download CSV
+          </Button>
+        </div>
         <div className="rc-card overflow-auto">
           <table className="w-full text-sm">
             <thead>
@@ -187,7 +205,7 @@ export default function DataPage() {
         <h2 className="text-lg font-semibold">Method (summary)</h2>
         <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm rc-muted">
           <li>Indicators are min–max normalized into deprivation gaps (1 = most deprived of the 30 districts).</li>
-          <li>The Priority Index is the weighted mean of gaps; weights are yours, renormalized per district over available data.</li>
+          <li>The need score is the weighted mean of gaps; weights are yours, renormalized per district over available data.</li>
           <li>K-Means typologies + gradient-boost drivers are fit per request from the files on disk — deterministic seeds, no leakage, no fabricated data.</li>
           <li>Full details in docs/METHODOLOGY.md (repo) and the API docs linked in the footer.</li>
         </ol>

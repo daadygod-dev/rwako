@@ -252,6 +252,8 @@ def analysis_ask(req: AskRequest) -> AskResponse:
         suggested_weights=out["suggested_weights"],
         weights_note=out["weights_note"],
         visual=out.get("visual"),
+        follow_ups=out.get("follow_ups", []),
+        recommendations=out.get("recommendations", []),
     )
 
 

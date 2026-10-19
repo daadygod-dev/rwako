@@ -5,24 +5,20 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export type Theme = "light" | "dark";
+export type Language = "en" | "kin";
 
 type UIState = {
-  // Priority Index weights (indicator code -> 0..5). Hydrated with API defaults
-  // on first indicators load, then user-edited values persist across views.
   weights: Record<string, number>;
   weightsInitialized: boolean;
-  // Globe/2D choropleth metric selector
   metric: string | null;
-  // Sharing/filtering
-  province: string | null; // null = all
-  // Analytic params shared across views
-  k: number;               // typologies cluster count
-  budgetRwfM: number;      // simulator envelope
-  floorPct: number;        // simulator floor (% of equal split)
+  province: string | null;
+  k: number;
+  budgetRwfM: number;
+  floorPct: number;
   driversTarget: string | null;
-  // Drawer (global — any view can open it)
   drawerPcode: string | null;
   theme: Theme;
+  language: Language;
 
   setWeight: (code: string, value: number) => void;
   initWeights: (defaults: Record<string, number>) => void;
@@ -36,6 +32,7 @@ type UIState = {
   openDistrict: (pcode: string) => void;
   closeDrawer: () => void;
   toggleTheme: () => void;
+  setLanguage: (lang: Language) => void;
 };
 
 const PRESET_BY_PILLAR: Record<string, "poverty" | "education" | "health"> = {
@@ -57,6 +54,7 @@ export const useUI = create<UIState>()(
       driversTarget: null,
       drawerPcode: null,
       theme: "light",
+      language: "en",
 
       setWeight: (code, value) => set((s) => ({ weights: { ...s.weights, [code]: value } })),
 
@@ -77,6 +75,7 @@ export const useUI = create<UIState>()(
       openDistrict: (drawerPcode) => set({ drawerPcode }),
       closeDrawer: () => set({ drawerPcode: null }),
       toggleTheme: () => set((s) => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      setLanguage: (language) => set({ language }),
     }),
     {
       name: "rc-ui",
@@ -93,6 +92,7 @@ export const useUI = create<UIState>()(
         floorPct: s.floorPct,
         driversTarget: s.driversTarget,
         theme: s.theme,
+        language: s.language,
       }),
     },
   ),

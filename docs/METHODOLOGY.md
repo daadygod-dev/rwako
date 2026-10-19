@@ -24,10 +24,10 @@ Each indicator is min–max normalized into a gap in [0, 1], 1 = most deprived d
 Relative (not absolute) scoring is deliberate: it surfaces *comparative* need for allocation
 decisions. Absolute thresholds per NST2 target can be layered in later.
 
-## 4. Priority Index
+## 4. Need score
 Weighted mean of gap scores:
 
-    PI_d = Σ_i w_i · gap_{d,i} / Σ_i w_i
+    NS_d = Σ_i w_i · gap_{d,i} / Σ_i w_i
 
 Weights are user-configurable (0–5), so the tool adapts to the decision-maker's mandate
 (e.g. a health SWAp weights stunting and insurance higher) while remaining fully transparent —
@@ -50,9 +50,9 @@ the rubric's "data use & methodology" criterion rewards defensible, explainable 
 
 ## 6. Allocation simulator
 Greedy proportional allocation: each district's share of the budget equals its share of the
-Priority Index (optionally floored so no district gets zero). Optional **population weighting**:
+Need score (optionally floored so no district gets zero). Optional **population weighting**:
 when the dataset includes a `population` column, shares are additionally proportional to residents
-at equal need — the displayed priority index is never re-scaled. This is a defensible
+at equal need — the displayed Need score is never re-scaled. This is a defensible
 first-pass allocation rule; optimizing against cost curves per intervention is future work
 (needs intervention-level cost data).
 

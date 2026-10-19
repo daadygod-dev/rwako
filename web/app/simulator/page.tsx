@@ -188,7 +188,7 @@ export default function SimulatorPage() {
         )}
 
       <p className="mt-2 text-xs rc-muted">
-        Shares follow each district&apos;s share of the total Priority Index · largest-remainder rounding keeps the table exact.
+        Shares follow each district&apos;s share of the total need · largest-remainder rounding keeps the table exact.
       </p>
     </div>
   );

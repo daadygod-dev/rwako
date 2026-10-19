@@ -109,7 +109,7 @@ def allocate(
         share = share / share.sum()
     raw = share * budget_rwf_m
     alloc_amt = raw.round(3)
-    n_bumps = int(round((budget_rwf_m - alloc_amt.sum()) * 1000))
+    n_bumps = int((budget_rwf_m - alloc_amt.sum()) * 1000 + (0.5 if budget_rwf_m >= alloc_amt.sum() else -0.5))
     if n_bumps != 0:  # deterministic largest-remainder correction
         order = (raw - alloc_amt).sort_values(ascending=n_bumps < 0).index
         step = 0.001 if n_bumps > 0 else -0.001

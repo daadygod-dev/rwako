@@ -24,11 +24,13 @@ export function DistrictDrawer() {
   if (!pcode) return null;
 
   const gaps = Object.entries(data?.gaps ?? {});
-  const chartData = gaps.map(([code, gap]) => ({
-    code,
-    district: gap ?? 0,
-    median: (data?.median_gaps?.[code] ?? 0) as number,
-  }));
+  const chartData = gaps
+    .filter(([, gap]) => gap != null)
+    .map(([code, gap]) => ({
+      code,
+      district: gap as number,
+      median: (data?.median_gaps?.[code] ?? 0) as number,
+    }));
 
   return (
     <>
@@ -59,7 +61,7 @@ export function DistrictDrawer() {
               </div>
               <div className="rc-card p-3">
                 <p className="text-2xl font-bold">{data.priority_index.toFixed(3)}</p>
-                <p className="text-xs rc-muted">index (median {data.median.toFixed(3)})</p>
+                <p className="text-xs rc-muted">need score (median {data.median.toFixed(3)})</p>
               </div>
               <div className="rc-card p-3">
                 <p className="text-2xl font-bold">{data.facilities + data.schools}</p>
@@ -75,7 +77,7 @@ export function DistrictDrawer() {
                   <YAxis type="category" dataKey="code" width={110} tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Bar dataKey="district" name="district gap" fill="var(--rc-accent)" radius={[0, 3, 3, 0]} />
-                  <ReferenceLine x="median" stroke="var(--rc-border)" />
+                  <Bar dataKey="median" name="national median" fill="var(--rc-muted)" radius={[0, 3, 3, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

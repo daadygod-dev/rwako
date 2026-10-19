@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -14,7 +15,7 @@ import { useUI } from "@/lib/store";
 
 type Entry =
   | { id: string; kind: "user"; text: string }
-  | { id: string; kind: "assistant"; text: string; sources: string[]; suggested: Record<string, number> | null; weightsNote: string | null; applied?: boolean; visual: VisualSpec | null }
+  | { id: string; kind: "assistant"; text: string; sources: string[]; suggested: Record<string, number> | null; weightsNote: string | null; applied?: boolean; visual: VisualSpec | null; followUps: string[]; recommendations: { text: string; href: string | null }[] }
   | { id: string; kind: "error"; text: string };
 
 function Visual({ spec }: { spec: VisualSpec }) {
@@ -62,8 +63,8 @@ function Visual({ spec }: { spec: VisualSpec }) {
               <PieChart>
                 <Tooltip formatter={(v) => [`${(v as number).toFixed(1)}%`, "share"]} />
                 <Pie data={spec.slices} dataKey="value" nameKey="label" innerRadius={52} outerRadius={78} paddingAngle={2} strokeWidth={0}>
-                  {spec.slices.map((s, i) => (
-                    <Cell key={s.label} fill={i === spec.slices.length - 1 && s.label === "Other districts" ? "var(--rc-muted)" : "var(--g-color-text-brand)"} fillOpacity={0.45 + (0.55 * (spec.slices.length - i)) / spec.slices.length} />
+                    {spec.slices.map((s, i) => (
+                    <Cell key={s.label} fill={i === spec.slices.length - 1 && s.label === "Other districts" ? "var(--rc-muted)" : `oklch(${50 + i * 8}% 0.18 ${250 - i * 25})`} />
                   ))}
                 </Pie>
               </PieChart>
@@ -176,6 +177,7 @@ let idc = 0;
 const nid = () => `m${++idc}`;
 
 export default function AssistantPage() {
+  const router = useRouter();
   const store = useUI();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [busy, setBusy] = useState(false);
@@ -210,6 +212,8 @@ export default function AssistantPage() {
           suggested: res.suggested_weights,
           weightsNote: res.weights_note,
           visual: res.visual,
+          followUps: res.follow_ups ?? [],
+          recommendations: res.recommendations ?? [],
         },
       ]);
     } catch (err) {
@@ -305,6 +309,50 @@ export default function AssistantPage() {
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{e.text}</ReactMarkdown>
                     </div>
                     {e.visual && <Visual spec={e.visual} />}
+                    {e.recommendations.length > 0 && (
+                      <div className="mt-3 rounded-md p-3" style={{ background: "var(--g-color-base-selection)" }}>
+                        <p className="mb-1.5 text-xs font-semibold" style={{ color: "var(--rc-fg)" }}>
+                          Recommended next moves
+                        </p>
+                        <ul className="flex flex-col gap-1.5">
+                          {e.recommendations.map((r) => (
+                            <li key={r.text} className="flex items-start gap-2 text-xs leading-relaxed">
+                              <span style={{ color: "var(--g-color-text-brand)" }} aria-hidden="true">✓</span>
+                              {r.href ? (
+                                <a
+                                  href={r.href}
+                                  className="hover:underline"
+                                  style={{ color: "var(--rc-fg)" }}
+                                  onClick={(ev) => {
+                                    ev.preventDefault();
+                                    router.push(r.href!);
+                                  }}
+                                >
+                                  {r.text}
+                                </a>
+                              ) : (
+                                <span style={{ color: "var(--rc-fg)" }}>{r.text}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {e.followUps.length > 0 && (
+                      <div className="mt-2.5 flex flex-wrap gap-1.5">
+                        {e.followUps.map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => void send(f)}
+                            disabled={busy}
+                            className="rounded-md px-2.5 py-1.5 text-xs font-medium transition-opacity hover:opacity-75 disabled:opacity-40"
+                            style={{ background: "var(--g-color-base-selection)", color: "var(--rc-fg)" }}
+                          >
+                            {f} →
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {e.sources.length > 0 && (
                       <p className="mt-2 text-xs rc-muted">
                         Answered from: {e.sources.map((s) => SOURCE_LABELS[s] ?? s).join(" · ")}

@@ -209,6 +209,61 @@ def test_prompt_forbids_ascii_charts():
     assert "3rd district" in ASM.SYSTEM_PROMPT
 
 
+def test_recommendations_grounded_and_capped():
+    hist = [
+        ("ranking", {}, {"rows": [
+            {"rank": 1, "district": "A", "priority_index": 0.9},
+            {"rank": 2, "district": "B", "priority_index": 0.8},
+            {"rank": 3, "district": "C", "priority_index": 0.7},
+        ]}),
+        ("explain_drivers", {}, {"target_label": "Poverty rate", "drivers": [
+            {"code": "x", "label": "Y", "importance": 0.5}]}),
+    ]
+    recs = ASM._build_recommendations(hist)
+    assert 1 <= len(recs) <= 3
+    assert "A" in recs[0]["text"] and recs[0]["href"] == "/simulator"
+    assert ASM._build_recommendations([]) == []
+    assert ASM._build_recommendations([("ranking", {}, {"error": "x"})]) == []
+
+
+def test_answer_carries_recommendations(monkeypatch):
+    turns = iter([
+        {"content": None, "tool_calls": [
+            {"id": "c1", "name": "ranking", "args": {"top_n": 3},
+             "raw": {"id": "c1", "type": "function",
+                     "function": {"name": "ranking", "arguments": '{"top_n": 3}'}}}]},
+        {"content": "Here.", "tool_calls": []},
+    ])
+    monkeypatch.setattr(ASM, "_post_chat", lambda *a, **k: next(turns))
+    out = ASM.answer("who needs most help?", [], {})
+    assert out["recommendations"] and out["recommendations"][0]["href"] == "/simulator"
+
+
+def test_follow_ups_from_tools_used():
+    hist = [
+        ("ranking", {}, {"rows": [{"rank": 1, "district": "A", "priority_index": 0.9}]}),
+        ("explain_drivers", {}, {"drivers": []}),
+    ]
+    out = ASM._build_follow_ups(hist)
+    assert len(out) == 3
+    assert out[0] == "Split a budget across the top 5 districts"
+    assert ASM._build_follow_ups([]) == []
+    assert ASM._build_follow_ups([("ranking", {}, {"error": "x"})]) == []
+
+
+def test_answer_carries_follow_ups(monkeypatch):
+    turns = iter([
+        {"content": None, "tool_calls": [
+            {"id": "c1", "name": "ranking", "args": {"top_n": 2},
+             "raw": {"id": "c1", "type": "function",
+                     "function": {"name": "ranking", "arguments": '{"top_n": 2}'}}}]},
+        {"content": "Here you go.", "tool_calls": []},
+    ])
+    monkeypatch.setattr(ASM, "_post_chat", lambda *a, **k: next(turns))
+    out = ASM.answer("who needs most help?", [], {})
+    assert out["follow_ups"][0] == "Split a budget across the top 5 districts"
+
+
 def test_predict_outcome_tool_live():
     from server.datastore import DataStore
 
